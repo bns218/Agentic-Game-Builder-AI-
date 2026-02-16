@@ -187,26 +187,7 @@ An `LlmAgent` that:
 
 ---
 
-## Bug Fix – v2: ExecutionAgent Text-Output Problem
 
-### What went wrong
-
-When running v1, Phase 3 emitted the game code as a **text response** instead
-of calling `write_game_files()`.  The pipeline reported "BUILD INCOMPLETE" and
-no files were written to disk.
-
-```
-💬  [ExecutionAgent] ```html
-<!DOCTYPE html>
-...                               ← code in text, NOT a tool call
-```
-
-### Root cause
-
-The original `ExecutionAgent` was a single `LlmAgent` asked to do two things
-in one turn: *generate code* and *call a tool with that code*.  Gemini treats
-"write code" as its primary job and emits a text response; calling a tool feels
-optional when the code is already visible in the output.
 
 ### Fix (three layers of defence)
 
