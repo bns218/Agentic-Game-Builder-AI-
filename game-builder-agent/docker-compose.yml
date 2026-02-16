@@ -1,0 +1,19 @@
+version: "3.9"
+
+# Convenience wrapper. Most users should use `docker run` directly.
+#
+# Usage:
+#   GEMINI_API_KEY=AIza... docker compose run --rm agent
+#   GEMINI_API_KEY=AIza... docker compose run --rm agent "top-down tank game"
+
+services:
+  agent:
+    build: .
+    image: game-builder-agent:latest
+    stdin_open: true    # -i  (required for interactive Q&A)
+    tty: true           # -t
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OUTPUT_DIR=/output
+    volumes:
+      - ./output:/output

@@ -1,0 +1,11 @@
+__pycache__/
+**/__pycache__/
+*.pyc
+.venv/
+.env
+.env.*
+output/*.html
+output/*.css
+output/*.js
+output/*.json
+.DS_Store
