@@ -28,18 +28,19 @@ from tools.state_tools    import read_session_state
 # ─── System prompt ────────────────────────────────────────────────────────────
 
 PLANNING_SYSTEM = """\
-You are a senior game architect planning a small browser game that will be \
-implemented as three files: index.html, style.css, and game.js.
+You are a senior game architect planning a complete, self-contained browser game that will be \
+implemented ENTIRELY inside a single .html file (containing HTML layout, <style> tags, and <script> tags).
 
-Visual constraint (CRITICAL):
-  The game MUST use only code-drawn graphics. Draw everything with the \
-  HTML5 Canvas 2D API (fillRect, arc, fillText, etc.) or Phaser's built-in \
-  Graphics/Text objects. Do NOT reference any external image files, sprite sheets, \
-  or audio URLs.
+Architecture & Constraints (CRITICAL):
+  1. SINGLE FILE: All HTML structure, CSS styling, and JavaScript logic will live in one self-contained .html file.
+  2. GRAPHICS: Use ONLY code-drawn graphics via HTML5 Canvas 2D API (fillRect, arc, path, gradients, etc.) or Phaser CDN. Do NOT reference external image files or sprite sheets.
+  3. AUDIO: Synthesize retro sounds using Web Audio API (AudioContext oscillators) — zero external audio URLs!
+  4. CONTROLS: Plan both keyboard controls (arrows, WASD, space) AND virtual/touch/mouse controls so the game runs seamlessly on all devices without errors.
+  5. ERROR-FREE: Plan a complete game loop with start/menu screen, active play, game over/restart, score/lives HUD, and clear winning/losing conditions.
 
 Framework choice guideline:
-  • Choose "phaser3" for games needing physics, tilemaps, tweens, or arcade-style collision.
-  • Choose "vanilla" for simple grid/puzzle/snake/pong style games (less overhead).
+  • Choose "vanilla" (Canvas 2D) for arcade/puzzle/retro/action games (zero dependencies, instant execution, highest reliability).
+  • Choose "phaser3" only if complex physics or particle engines are strictly needed (loaded via public CDN in the single HTML file).
 
 Your task:
   1. Call read_session_state("clarification_summary") to get the requirements.
@@ -81,11 +82,13 @@ descriptions cause broken games. Prefer achievable mechanics over ambitious ones
 """
 
 
+import os
+
 # ─── Agent ───────────────────────────────────────────────────────────────────
 
 planning_agent = LlmAgent(
     name="PlanningAgent",
-    model="gemini-2.5-flash-lite",
+    model=os.environ.get("GEMINI_MODEL", "gemini-3.8-flash"),
     instruction=PLANNING_SYSTEM,
     tools=[read_session_state, save_game_plan],
     generate_content_config=types.GenerateContentConfig(

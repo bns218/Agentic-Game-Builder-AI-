@@ -50,11 +50,13 @@ Start by reading it, then ask your first (and possibly only) question.
 """
 
 
+import os
+
 # ─── Inner LlmAgent ──────────────────────────────────────────────────────────
 
 clarification_agent = LlmAgent(
     name        = "ClarificationAgent",
-    model       = "gemini-2.5-flash-lite",
+    model       = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash"),
     instruction  = CLARIFICATION_SYSTEM,
     tools       = [ask_user_question, complete_clarification],
     description = (

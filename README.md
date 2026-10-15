@@ -1,52 +1,52 @@
 # 🎮 Agentic Game-Builder AI  –  Powered by Google Gemini ADK
 
-An AI agent pipeline that accepts a natural-language game idea, asks clarifying
-questions, produces a structured game plan, and generates a fully playable browser
-game (`index.html` + `style.css` + `game.js`) — built entirely on the
-**Google Agent Development Kit (ADK)**.
+An autonomous AI agent pipeline that accepts a natural-language game idea and generates a
+complete, error-free, fully playable browser game **in a single, self-contained `.html` file**
+(`output/index.html`) with an interactive **Live Coding Web Dashboard** and **Live Sandbox Preview**.
+
+Built on the **Google Agent Development Kit (ADK)** and Google GenAI SDK.
 
 ---
 
-## Table of Contents
+## 🌟 Key Features
 
-1. [Quick Start](#quick-start)
-2. [Docker Build & Run](#docker-build--run)
-3. [Local Run (no Docker)](#local-run-no-docker)
-4. [Agent Architecture](#agent-architecture)
-5. [Bug Fix – v2](#bug-fix--v2-executionagent-text-output-problem)
-6. [How Data Flows Between Agents](#how-data-flows-between-agents)
-7. [Trade-offs](#trade-offs)
-8. [Future Improvements](#future-improvements)
-9. [Project Structure](#project-structure)
+- **🌐 Live Coding Web UI**: Real-time split-screen dashboard showing the AI live coding on the left and running the game in an interactive sandbox iframe on the right.
+- **📄 Single `.html` Output Only**: Everything (HTML structure, CSS in `<style>`, and JavaScript game logic in `<script>`) is generated into a single file. Zero build steps, zero missing files, 100% portable.
+- **🎨 Code-Drawn Graphics**: Uses HTML5 Canvas 2D API for all sprites, particle bursts, and UI. Zero external image dependencies or 404 errors.
+- **🔊 Web Audio API Synthesizer**: Uses built-in browser audio oscillators to synthesize retro game bleeps, lasers, hits, and explosions without external audio files.
+- **📱 Dual Controls**: Keyboard (WASD, Arrows, Space) + on-screen mobile/touch virtual buttons for seamless gameplay on both desktop and mobile.
+- **🔄 Multi-Agent Pipeline**: Clarification loop → Architecture planning → Live code generation & validation.
 
 ---
 
 ## Quick Start
 
+### Option 1: Launch the Live Coding Web UI (Recommended)
+
 ```bash
-git clone <repo-url>
-cd game-builder-agent
-mkdir -p output
+# Set your Gemini API key (optional if entering via Web UI)
+export GEMINI_API_KEY="AIza..."
 
-# Build the image
-docker build -t game-builder-agent .
-
-# Run interactively (you will be asked questions about your game)
-docker run -it --rm \
-  -e GEMINI_API_KEY=AIza... \
-  -v "$(pwd)/output:/output" \
-  game-builder-agent
-
-# OR pass the game idea inline
-docker run -it --rm \
-  -e GEMINI_API_KEY=AIza... \
-  -v "$(pwd)/output:/output" \
-  game-builder-agent "a retro space shooter with power-ups"
+# Start the web dashboard
+python agent.py --web
+# OR
+python server.py
 ```
+Open **http://localhost:8000** in your browser to watch live code generation and play games in real time!
 
-Open `output/index.html` in any modern browser to play the generated game.
+### Option 2: Run via CLI
 
-> **API Key**: Get a free Gemini API key from [Google AI Studio](https://aistudio.google.com).
+```bash
+export GEMINI_API_KEY="AIza..."
+
+# Interactive prompt
+python agent.py
+
+# Inline game idea
+python agent.py "a retro space shooter with power-ups and boss fight"
+```
+The game will be written to `output/index.html`!
+Open `output/index.html` in any browser to play immediately.
 
 ---
 

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎮 Agentic Game Builder AI – Live Coding & Play</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0a0c14;
+      --bg-card: #121526;
+      --bg-card-hover: #191e36;
+      --border: #232946;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #06b6d4;
+      --accent-pink: #ec4899;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --code-bg: #090b10;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ─── Header ───────────────────────────────────────── */
+    header {
+      background: rgba(18, 21, 38, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #fff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text p {
+      font-size: 0.72rem;
+      color: var(--accent);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .dot.online { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .dot.busy { background: var(--warning); box-shadow: 0 0 8px var(--warning); animation: pulse 1.5s infinite; }
+    .dot.error { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: #3b4266;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      border: none;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+      transform: translateY(-1px);
+    }
+
+    /* ─── Main Content ─────────────────────────────────── */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem 1.75rem;
+      gap: 1rem;
+    }
+
+    /* ─── Hero / Prompt Section ────────────────────────── */
+    .hero-card {
+      background: linear-gradient(145deg, #13172e, #0e1122);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .input-wrapper {
+      display: flex;
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+
+    .prompt-input {
+      flex: 1;
+      background: #090b14;
+      border: 1px solid #232946;
+      border-radius: 10px;
+      padding: 0.85rem 1.15rem;
+      font-size: 0.95rem;
+      color: #fff;
+      font-family: inherit;
+      resize: none;
+      min-height: 52px;
+      max-height: 120px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .prompt-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .build-btn {
+      padding: 0 1.75rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+      white-space: nowrap;
+    }
+
+    .build-btn:hover {
+      box-shadow: 0 6px 25px rgba(6, 182, 212, 0.45);
+      transform: translateY(-2px);
+    }
+
+    .build-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .preset-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+      align-items: center;
+    }
+
+    .preset-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .chip {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .chip:hover {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* ─── Pipeline Progress ────────────────────────────── */
+    .progress-bar-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0d1020;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 1.25rem;
+      font-size: 0.8rem;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .step.active {
+      color: var(--accent);
+    }
+
+    .step.completed {
+      color: var(--success);
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #1e243d;
+      display: grid;
+      place-items: center;
+      font-size: 0.7rem;
+    }
+
+    .step.active .step-num {
+      background: var(--accent);
+      color: #000;
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .step.completed .step-num {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .step-arrow {
+      color: #2e3656;
+      font-size: 1.1rem;
+    }
+
+    /* ─── Split Workspace ──────────────────────────────── */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      flex: 1;
+      min-height: 580px;
+    }
+
+    @media (max-width: 960px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .panel-header {
+      background: #0d1020;
+      border-bottom: 1px solid var(--border);
+      padding: 0.65rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #e2e8f0;
+    }
+
+    .panel-tag {
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .panel-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* ─── Left Pane: Live Code Viewer ─────────────────── */
+    .code-container {
+      flex: 1;
+      position: relative;
+      background: var(--code-bg);
+      overflow: hidden;
+    }
+
+    .code-pre {
+      margin: 0;
+      padding: 1rem;
+      height: 100%;
+      overflow-y: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .code-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 15px;
+      background: var(--accent);
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .code-stats {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: 'Fira Code', monospace;
+    }
+
+    /* ─── Right Pane: Live Game Sandbox ───────────────── */
+    .sandbox-container {
+      flex: 1;
+      position: relative;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .game-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000;
+      transition: width 0.2s, height 0.2s;
+    }
+
+    .placeholder-view {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #181d38 0%, #080a14 100%);
+      color: var(--text-muted);
+      text-align: center;
+      padding: 2rem;
+      gap: 1rem;
+    }
+
+    .placeholder-icon {
+      font-size: 3.5rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .size-toggle-btn {
+      background: #181d36;
+      border: 1px solid var(--border);
+      color: #94a3b8;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+
+    .size-toggle-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* ─── Modal ────────────────────────────────────────── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: none;
+      place-items: center;
+      z-index: 100;
+    }
+
+    .modal-backdrop.open {
+      display: grid;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 90%;
+      max-width: 480px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .modal-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .close-modal {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.25rem;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #cbd5e1;
+    }
+
+    .form-input {
+      width: 100%;
+      background: #090b14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.85rem;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Header ────────────────────────────────────── -->
+  <header>
+    <a href="#" class="brand">
+      <div class="brand-icon">🎮</div>
+      <div class="brand-text">
+        <h1>Agentic Game-Builder AI</h1>
+        <p>Live Coding • Single .HTML • Instant Play</p>
+      </div>
+    </a>
+
+    <div class="header-actions">
+      <div class="badge-status" id="statusBadge">
+        <span class="dot online" id="statusDot"></span>
+        <span id="statusText">Ready</span>
+      </div>
+
+      <button class="btn" id="apiKeyBtn" title="Set Gemini API Key">
+        🔑 API Key
+      </button>
+
+      <button class="btn" id="downloadBtn" title="Download Game as .html">
+        📥 Download .html
+      </button>
+
+      <a href="/output/index.html" target="_blank" class="btn btn-primary" id="playExternalBtn">
+        ▶ Open Fullscreen
+      </a>
+    </div>
+  </header>
+
+  <!-- ─── Main Workspace ────────────────────────────── -->
+  <main>
+    <!-- Prompt & Presets Bar -->
+    <div class="hero-card">
+      <div class="input-wrapper">
+        <textarea id="promptInput" class="prompt-input" rows="2" placeholder="Describe the game you want to build (e.g., 'Retro Space Invader with 3 waves, laser power-ups, boss fight and arcade sound effects')..."></textarea>
+        <button id="generateBtn" class="build-btn">
+          <span>🚀 Generate Game</span>
+        </button>
+      </div>
+
+      <div class="preset-chips">
+        <span class="preset-label">Quick Ideas:</span>
+        <span class="chip" data-prompt="A retro space shooter where player fires lasers at incoming asteroid waves, collects shield power-ups, and fights an alien mothership boss with sound effects.">🚀 Space Shooter & Boss</span>
+        <span class="chip" data-prompt="Neon Brick Breaker with paddle, multi-ball powerups, explosive bricks, retro audio bleeps and high score tracker.">🧱 Neon Brick Breaker</span>
+        <span class="chip" data-prompt="Cyberpunk Snake with glowing grid, speed boost portals, hazard walls, synth sounds and responsive touch buttons.">🐍 Cyber Snake 2049</span>
+        <span class="chip" data-prompt="Arcade Pong with AI opponent, curve shots, particle trails, increasing velocity and retro sound synthesis.">🏓 Arcade Pong Battle</span>
+        <span class="chip" data-prompt="Flappy Cyber Bird flying through electric neon pipes with gravity physics, coin collectibles and touch/spacebar controls.">🐦 Flappy Neon Bird</span>
+      </div>
+    </div>
+
+    <!-- Pipeline Step Indicators -->
+    <div class="progress-bar-container">
+      <div class="step active" id="step1">
+        <span class="step-num">1</span>
+        <span>Requirements & Concept</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="step" id="step2">
+        <span class="step-num">2</span>
+        <span>Canvas & State Architecture</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="step" id="step3">
+        <span class="step-num">3</span>
+        <span>Live Code Streaming</span>
+      </div>
+      <span class="step-arrow">→</span>
+      <div class="step" id="step4">
+        <span class="step-num">4</span>
+        <span>Instant Sandbox Play</span>
+      </div>
+    </div>
+
+    <!-- Split Workspace -->
+    <div class="workspace">
+      <!-- Left Pane: Live Code Editor View -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>💻 Live Code Generation</span>
+            <span class="panel-tag">index.html</span>
+          </div>
+          <div class="panel-tools">
+            <span class="code-stats" id="codeStats">0 lines · 0 KB</span>
+            <button class="btn" id="copyCodeBtn" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;">
+              📋 Copy
+            </button>
+          </div>
+        </div>
+        <div class="code-container">
+          <pre class="code-pre" id="codePre"><code id="codeOutput"><span style="color: #64748b;">// Live generated single-file HTML code will appear here line-by-line...
+// Click "Generate Game" above to start live coding.</span></code><span class="code-cursor" id="codeCursor" style="display:none;"></span></pre>
+        </div>
+      </div>
+
+      <!-- Right Pane: Live Running Game Sandbox -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>🕹️ Live Running Game</span>
+            <span class="panel-tag" id="gameEngineTag">HTML5 Canvas + Web Audio</span>
+          </div>
+          <div class="panel-tools">
+            <button class="size-toggle-btn active" id="btnFit" title="Fit to pane">Fit</button>
+            <button class="size-toggle-btn" id="btnMobile" title="Mobile viewport">Mobile</button>
+            <button class="btn" id="reloadGameBtn" style="padding: 0.25rem 0.55rem; font-size: 0.72rem;">
+              🔄 Restart
+            </button>
+          </div>
+        </div>
+        <div class="sandbox-container" id="sandboxContainer">
+          <div class="placeholder-view" id="sandboxPlaceholder">
+            <div class="placeholder-icon">🕹️</div>
+            <h3>Interactive Game Sandbox Ready</h3>
+            <p>Describe your game idea above and click <b>Generate Game</b>.<br>Watch the code stream live on the left and play it instantly on the right!</p>
+          </div>
+          <iframe id="gameIframe" class="game-iframe" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ─── Settings Modal ────────────────────────────── -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>⚙️ Gemini Settings</h3>
+        <button class="close-modal" id="closeSettingsBtn">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label for="apiKeyInput">Gemini API Key</label>
+        <input type="password" id="apiKeyInput" class="form-input" placeholder="AIzaSy...">
+        <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 0.35rem;">
+          Saved in your browser local storage. If omitted, uses server's GEMINI_API_KEY.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="modelSelect">Gemini Model</label>
+        <select id="modelSelect" class="form-input">
+          <option value="gemini-3.8-flash" selected>Gemini 3.8 Flash (Recommended by Google)</option>
+          <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" id="saveSettingsBtn" style="width: 100%; justify-content: center; margin-top: 0.5rem;">
+        Save Settings
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── Interactive Script ────────────────────────── -->
+  <script>
+    let socket = null;
+    let currentCode = "";
+    let isGenerating = false;
+
+    const promptInput = document.getElementById('promptInput');
+    const generateBtn = document.getElementById('generateBtn');
+    const codeOutput  = document.getElementById('codeOutput');
+    const codePre     = document.getElementById('codePre');
+    const codeCursor  = document.getElementById('codeCursor');
+    const codeStats   = document.getElementById('codeStats');
+    const gameIframe  = document.getElementById('gameIframe');
+    const sandboxPlaceholder = document.getElementById('sandboxPlaceholder');
+    const statusBadge = document.getElementById('statusBadge');
+    const statusDot   = document.getElementById('statusDot');
+    const statusText  = document.getElementById('statusText');
+    const reloadGameBtn = document.getElementById('reloadGameBtn');
+    const copyCodeBtn   = document.getElementById('copyCodeBtn');
+    const downloadBtn   = document.getElementById('downloadBtn');
+    const apiKeyBtn     = document.getElementById('apiKeyBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    const apiKeyInput   = document.getElementById('apiKeyInput');
+    const modelSelect   = document.getElementById('modelSelect');
+    const btnFit        = document.getElementById('btnFit');
+    const btnMobile     = document.getElementById('btnMobile');
+
+    // Preset prompts
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        promptInput.value = chip.getAttribute('data-prompt');
+        promptInput.focus();
+      });
+    });
+
+    // Check saved settings
+    const savedKey = localStorage.getItem('gemini_api_key');
+    if (savedKey) apiKeyInput.value = savedKey;
+
+    let savedModel = localStorage.getItem('gemini_model');
+    // Automatically purge deprecated models from localStorage
+    if (!savedModel || savedModel.includes("2.0-flash") || savedModel.includes("1.5-flash")) {
+      savedModel = "gemini-3.8-flash";
+      localStorage.setItem('gemini_model', savedModel);
+    }
+    modelSelect.value = savedModel;
+
+    apiKeyBtn.onclick = () => settingsModal.classList.add('open');
+    closeSettingsBtn.onclick = () => settingsModal.classList.remove('open');
+    saveSettingsBtn.onclick = () => {
+      localStorage.setItem('gemini_api_key', apiKeyInput.value.trim());
+      localStorage.setItem('gemini_model', modelSelect.value);
+      settingsModal.classList.remove('open');
+    };
+
+    // Check status on load
+    fetch('/api/status')
+      .then(r => r.json())
+      .then(data => {
+        if (data.hasCurrentGame) {
+          loadGameIntoIframe('/api/game/current');
+        }
+      })
+      .catch(() => {});
+
+    function setStep(stepIndex) {
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById(`step${i}`);
+        el.classList.remove('active', 'completed');
+        if (i < stepIndex) el.classList.add('completed');
+        else if (i === stepIndex) el.classList.add('active');
+      }
+    }
+
+    function setStatus(text, type = 'online') {
+      statusText.textContent = text;
+      statusDot.className = `dot ${type}`;
+    }
+
+    function updateCodeStats(code) {
+      const lines = code.split('\n').length;
+      const kb = (new Blob([code]).size / 1024).toFixed(1);
+      codeStats.textContent = `${lines} lines · ${kb} KB`;
+    }
+
+    function loadGameIntoIframe(urlOrContent, isHtmlContent = false) {
+      sandboxPlaceholder.style.display = 'none';
+      gameIframe.style.display = 'block';
+      if (isHtmlContent) {
+        gameIframe.srcdoc = urlOrContent;
+      } else {
+        gameIframe.src = urlOrContent + '?t=' + Date.now();
+      }
+    }
+
+    reloadGameBtn.onclick = () => {
+      if (currentCode) {
+        loadGameIntoIframe(currentCode, true);
+      } else {
+        gameIframe.src = '/api/game/current?t=' + Date.now();
+      }
+    };
+
+    copyCodeBtn.onclick = () => {
+      if (!currentCode) return;
+      navigator.clipboard.writeText(currentCode).then(() => {
+        copyCodeBtn.textContent = '✅ Copied!';
+        setTimeout(() => copyCodeBtn.textContent = '📋 Copy', 2000);
+      });
+    };
+
+    downloadBtn.onclick = () => {
+      window.location.href = '/api/download';
+    };
+
+    // Device size toggles
+    btnFit.onclick = () => {
+      btnFit.classList.add('active');
+      btnMobile.classList.remove('active');
+      gameIframe.style.width = '100%';
+      gameIframe.style.height = '100%';
+    };
+
+    btnMobile.onclick = () => {
+      btnMobile.classList.add('active');
+      btnFit.classList.remove('active');
+      gameIframe.style.width = '390px';
+      gameIframe.style.height = '90%';
+      gameIframe.style.borderRadius = '16px';
+      gameIframe.style.border = '2px solid var(--border)';
+    };
+
+    // ─── WebSocket Live Code Generation ─────────────────
+    function startGeneration() {
+      const idea = promptInput.value.trim();
+      if (!idea) {
+        alert("Please enter a game idea!");
+        return;
+      }
+
+      if (isGenerating) return;
+      isGenerating = true;
+      generateBtn.disabled = true;
+      generateBtn.innerHTML = `<span>⏳ Building Game...</span>`;
+      setStatus("Connecting...", "busy");
+
+      currentCode = "";
+      codeOutput.textContent = "";
+      codeCursor.style.display = "inline-block";
+      updateCodeStats("");
+      setStep(1);
+
+      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      socket = new WebSocket(`${protocol}//${window.location.host}/ws/generate`);
+
+      socket.onopen = () => {
+        setStatus("Planning Game...", "busy");
+        socket.send(JSON.stringify({
+          idea: idea,
+          apiKey: apiKeyInput.value.trim(),
+          model: modelSelect.value
+        }));
+      };
+
+      socket.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+
+        if (msg.type === "phase") {
+          if (msg.phase === "planning") {
+            setStep(2);
+            setStatus("Architecting Engine...", "busy");
+          } else if (msg.phase === "coding") {
+            setStep(3);
+            setStatus("Live Coding...", "busy");
+          } else if (msg.phase === "validating") {
+            setStatus("Validating...", "busy");
+          }
+        } else if (msg.type === "plan") {
+          setStatus(msg.message || "Plan ready...", "busy");
+        } else if (msg.type === "chunk") {
+          currentCode += msg.chunk;
+          codeOutput.textContent = currentCode;
+          updateCodeStats(currentCode);
+          codePre.scrollTop = codePre.scrollHeight;
+        } else if (msg.type === "complete") {
+          currentCode = msg.code;
+          codeOutput.textContent = currentCode;
+          codeCursor.style.display = "none";
+          updateCodeStats(currentCode);
+          setStep(4);
+          setStatus("Game Ready!", "online");
+
+          // Run immediately in live sandbox
+          loadGameIntoIframe(currentCode, true);
+
+          isGenerating = false;
+          generateBtn.disabled = false;
+          generateBtn.innerHTML = `<span>🚀 Generate Game</span>`;
+        } else if (msg.type === "error") {
+          setStatus("Error", "error");
+          alert("Error: " + msg.message);
+          isGenerating = false;
+          generateBtn.disabled = false;
+          generateBtn.innerHTML = `<span>🚀 Generate Game</span>`;
+          codeCursor.style.display = "none";
+        }
+      };
+
+      socket.onerror = (err) => {
+        console.error("WebSocket error:", err);
+        setStatus("Connection Failed", "error");
+        isGenerating = false;
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = `<span>🚀 Generate Game</span>`;
+        codeCursor.style.display = "none";
+      };
+
+      socket.onclose = () => {
+        if (isGenerating) {
+          isGenerating = false;
+          generateBtn.disabled = false;
+          generateBtn.innerHTML = `<span>🚀 Generate Game</span>`;
+          codeCursor.style.display = "none";
+        }
+      };
+    }
+
+    generateBtn.onclick = startGeneration;
+    promptInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        startGeneration();
+      }
+    });
+  </script>
+</body>
+</html>

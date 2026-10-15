@@ -20,7 +20,7 @@ from pathlib import Path
 from google.adk.tools.tool_context import ToolContext
 
 
-OUTPUT_DIR = Path(os.environ.get("OUTPUT_DIR", "/output"))
+OUTPUT_DIR = Path(os.environ.get("OUTPUT_DIR", "./output")).resolve()
 
 REQUIRED_KEYS = {
     "title", "framework", "player_controls",
